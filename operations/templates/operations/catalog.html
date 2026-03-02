@@ -1,1 +1,43 @@
 {% extends 'base.html' %}
+
+
+
+{% block title %}Catálogo de Productos - NAZ{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-center">
+    <div class="col">
+        <h2>Catálogo de Productos</h2>
+    </div>
+    <div class="col-auto">
+        <input type="text" class="form-control" placeholder="Buscar por SKU o Nombre...">
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for product in products %}
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">{{ product.name }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">SKU: {{ product.sku }}</h6>
+                <p class="card-text small">
+                    <strong>Marca:</strong> {{ product.brand.name }}<br>
+                    <strong>Categoría:</strong> {{ product.category.name }}<br>
+                    <strong>Tipo:</strong> {{ product.get_type_display }}
+                </p>
+            </div>
+            <div class="card-footer bg-transparent">
+                <a href="{% url 'operations:product_detail' product.pk %}" class="btn btn-primary btn-sm w-100">Ver Ficha Técnica</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-warning" role="alert">
+            No hay productos registrados en el catálogo. ¡Ve al Panel Admin a crear algunos!
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

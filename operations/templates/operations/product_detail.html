@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle - {{ product.name }} | IDA ERP{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'operations:catalog' %}">Catálogo</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ product.sku }}</li>
+            </ol>
+        </nav>
+        <h2>{{ product.name }}</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-dark text-white">
+                Información General
+            </div>
+            <div class="card-body">
+                <p><strong>Descripción:</strong> {{ product.description|default:"Sin descripción disponible." }}</p>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><strong>SKU:</strong> {{ product.sku }}</li>
+                            <li class="list-group-item"><strong>UPC:</strong> {{ product.upc|default:"N/A" }}</li>
+                            <li class="list-group-item"><strong>Marca:</strong> {{ product.brand.name }}</li>
+                        </ul>
+                    </div>
+                    <div class="col-sm-6">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item"><strong>Categoría:</strong> {{ product.category.name }}</li>
+                            <li class="list-group-item"><strong>Tipo:</strong> {{ product.get_type_display }}</li>
+                            <li class="list-group-item"><strong>Estado:</strong> 
+                                {% if product.is_active %}
+                                    <span class="badge bg-success">Activo</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Inactivo</span>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-secondary text-white">
+                Logística y Dimensiones
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong>Unidad:</strong> {{ product.unit_of_measure.name }}</li>
+                    <li class="list-group-item"><strong>Peso:</strong> {{ product.weight }}</li>
+                    <li class="list-group-item"><strong>Dimensiones:</strong> {{ product.width }}x{{ product.height }}x{{ product.length }}</li>
+                    <li class="list-group-item text-danger"><strong>Alerta Stock Min:</strong> {{ product.min_stock_alert }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
