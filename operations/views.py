@@ -6,6 +6,7 @@ class CatalogListView(ListView):
     model = Product
     template_name = 'operations/catalog.html'
     context_object_name = 'products'
+    paginate_by = 1
     
     def get_queryset(self):
         # 1. Consulta base (lo que ya tenías)
