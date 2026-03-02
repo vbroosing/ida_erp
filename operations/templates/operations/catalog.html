@@ -10,9 +10,16 @@
         <h2>Catálogo de Productos</h2>
     </div>
     <div class="col-auto">
-        <input type="text" class="form-control" placeholder="Buscar por SKU o Nombre...">
+        <form method="GET" action="{% url 'operations:catalog' %}" class="d-flex">
+            <input type="text" name="q" class="form-control me-2" placeholder="Buscar por SKU o Nombre..." value="{{ request.GET.q|default_if_none:'' }}">
+            <button type="submit" class="btn btn-outline-dark">Buscar</button>
+            
+            {% if request.GET.q %}
+                <a href="{% url 'operations:catalog' %}" class="btn btn-link text-danger ms-2 text-decoration-none">Limpiar</a>
+            {% endif %}
+        </form>
     </div>
-</div>
+    </div>
 
 <div class="row row-cols-1 row-cols-md-3 g-4">
     {% for product in products %}
