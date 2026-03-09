@@ -29,7 +29,9 @@ INSTALLED_APPS = [
     # APPS PROPIAS
     'core.apps.CoreConfig',
     'catalog.apps.CatalogConfig',
-    'inventory.apps.InventoryConfig'
+    'inventory.apps.InventoryConfig',
+    'purchases.apps.PurchasesConfig',
+    'logistic.apps.LogisticConfig'
 ]
 
 MIDDLEWARE = [
