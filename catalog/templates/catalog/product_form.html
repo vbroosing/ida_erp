@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block title %}Nuevo Producto - IDA ERP{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2>Registrar Nuevo Producto</h2>
+    <a href="{% url 'product_list' %}" class="text-decoration-none text-secondary">← Volver al catálogo</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Identificación</label>
+                    <div class="mb-2">{{ form.sku.label_tag }} {{ form.sku }}</div>
+                    <div class="mb-2">{{ form.name.label_tag }} {{ form.name }}</div>
+                    <div class="mb-2">{{ form.type.label_tag }} {{ form.type }}</div>
+                </div>
+                
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Clasificación</label>
+                    <div class="mb-2">{{ form.brand.label_tag }} {{ form.brand }}</div>
+                    <div class="mb-2">{{ form.unit_of_measure.label_tag }} {{ form.unit_of_measure }}</div>
+                    
+                    <label class="form-label fw-bold mt-2">Categoría</label>
+                    
+                    <div class="d-none">
+                        {{ form.category }}
+                    </div>
+                    
+                    <div id="dynamic-categories-container" class="d-flex flex-column gap-2">
+                    </div>
+                    <div id="category-status" class="text-muted small mt-1"></div>
+                </div>
+            </div> <hr>
+
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label class="form-label fw-bold">Dimensiones y Control</label>
+                </div>
+                <div class="col-md-3">{{ form.weight.label_tag }} {{ form.weight }}</div>
+                <div class="col-md-2">{{ form.height.label_tag }} {{ form.height }}</div>
+                <div class="col-md-2">{{ form.width.label_tag }} {{ form.width }}</div>
+                <div class="col-md-2">{{ form.length.label_tag }} {{ form.length }}</div>
+                <div class="col-md-3">{{ form.min_stock_alert.label_tag }} {{ form.min_stock_alert }}</div>
+            </div>
+
+            <div class="d-flex justify-content-end mt-4">
+                <button type="submit" class="btn btn-success px-4">Guardar Producto</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const container = document.getElementById('dynamic-categories-container');
+    const hiddenCategoryInput = document.getElementById('id_category');
+    const statusText = document.getElementById('category-status');
+
+    async function loadCategories(parentId = null, level = 0) {
+        let url = "{% url 'api_subcategories' %}";
+        if (parentId) {
+            url += `?parent_id=${parentId}`;
+        }
+
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+
+            const selects = container.querySelectorAll('select');
+            selects.forEach(select => {
+                if (parseInt(select.dataset.level) >= level) {
+                    select.remove();
+                }
+            });
+
+            if (data.length > 0) {
+                statusText.innerText = ""; 
+                
+                const selectElement = document.createElement('select');
+                selectElement.className = 'form-select border-primary shadow-sm';
+                selectElement.dataset.level = level; 
+                
+                const defaultOption = document.createElement('option');
+                defaultOption.text = "--- Selecciona una categoría ---";
+                defaultOption.value = "";
+                selectElement.appendChild(defaultOption);
+
+                data.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat.id;
+                    option.text = cat.name;
+                    selectElement.appendChild(option);
+                });
+
+                selectElement.addEventListener('change', function() {
+                    const selectedId = this.value;
+                    if (selectedId) {
+                        hiddenCategoryInput.value = selectedId;
+                        loadCategories(selectedId, level + 1);
+                    } else {
+                        loadCategories(parentId, level); 
+                        hiddenCategoryInput.value = parentId || ""; 
+                    }
+                });
+
+                container.appendChild(selectElement);
+            } else {
+                if(parentId) {
+                    statusText.innerHTML = '<span class="text-success">✓ Sub-categoría final alcanzada</span>';
+                }
+            }
+        } catch (error) {
+            console.error("Error cargando categorías:", error);
+            statusText.innerText = "Error cargando categorías.";
+        }
+    }
+
+    loadCategories();
+});
+</script>
+{% endblock %}
