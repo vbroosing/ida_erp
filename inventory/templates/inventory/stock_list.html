@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Stock Maestro - IDA ERP{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Estado de Inventario</h2>
+    <div>
+        <a href="{% url 'stock_adjust' %}" class="btn btn-warning fw-bold">± Ajuste de Stock</a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Producto</th>
+                    <th>Bodega / Ubicación</th>
+                    <th class="text-center">Cant. Disponible</th>
+                    <th class="text-center">Reservado</th>
+                    <th>Último Conteo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in stocks %}
+                <tr>
+                    <td>
+                        <div class="fw-bold">{{ item.product.name }}</div>
+                        <small class="text-muted">{{ item.product.sku }}</small>
+                    </td>
+                    <td>
+                        <div>{{ item.location.warehouse.name }}</div>
+                        <span class="badge bg-info text-dark">{{ item.location.code }}</span>
+                    </td>
+                    <td class="text-center">
+                        <span class="fs-5 {% if item.quantity <= 0 %}text-danger{% else %}text-success{% endif %}">
+                            {{ item.quantity }}
+                        </span>
+                        <small class="text-muted">{{ item.product.unit_of_measure.name }}</small>
+                    </td>
+                    <td class="text-center text-muted">
+                        {{ item.reserved_quantity }}
+                    </td>
+                    <td>
+                        <small>{{ item.last_counted_at|date:"d/m/Y H:i"|default:"---" }}</small>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-5 text-muted">
+                        No hay registros de stock. Realiza un ajuste para iniciar el inventario.
+                    </td>
+                </tr>
+                {% endfor %}
+                
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

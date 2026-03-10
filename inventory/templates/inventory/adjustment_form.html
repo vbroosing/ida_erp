@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Nuevo Ajuste de Stock - IDA ERP{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2>Registrar Movimiento de Inventario</h2>
+    <a href="{% url 'stock_list' %}" class="text-decoration-none text-secondary">← Volver al inventario</a>
+</div>
+
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow border-0">
+            <div class="card-header bg-warning text-dark fw-bold">
+                Entrada / Salida Manual de Mercancía
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label fw-bold">Producto</label>
+                            {{ form.product }}
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label fw-bold">Ubicación (Destino/Origen)</label>
+                            {{ form.location }}
+                            <div class="form-text text-muted">Ej: Pasillo R, repisa 22</div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Tipo de Movimiento</label>
+                            {{ form.adjustment_type }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Cantidad</label>
+                            {{ form.quantity }}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Motivo del Ajuste</label>
+                        {{ form.reason }}
+                    </div>
+
+                    <div class="alert alert-info small">
+                        <strong>Nota:</strong> Al guardar, se actualizará el stock maestro y se generará automáticamente un registro inmutable en el Kardex.
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">Aplicar Movimiento</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
