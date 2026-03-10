@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Nuevo Producto - IDA ERP{% endblock %}
 
@@ -31,10 +32,10 @@
                     <div class="d-none">
                         {{ form.category }}
                     </div>
-                    
-                    <div id="dynamic-categories-container" class="d-flex flex-column gap-2">
-                    </div>
+
+                    <div id="dynamic-categories-container" class="d-flex flex-column gap-2" data-api-url="{% url 'api_subcategories' %}"></div>                    
                     <div id="category-status" class="text-muted small mt-1"></div>
+                    
                 </div>
             </div> <hr>
 
@@ -56,72 +57,5 @@
     </div>
 </div>
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const container = document.getElementById('dynamic-categories-container');
-    const hiddenCategoryInput = document.getElementById('id_category');
-    const statusText = document.getElementById('category-status');
-
-    async function loadCategories(parentId = null, level = 0) {
-        let url = "{% url 'api_subcategories' %}";
-        if (parentId) {
-            url += `?parent_id=${parentId}`;
-        }
-
-        try {
-            const response = await fetch(url);
-            const data = await response.json();
-
-            const selects = container.querySelectorAll('select');
-            selects.forEach(select => {
-                if (parseInt(select.dataset.level) >= level) {
-                    select.remove();
-                }
-            });
-
-            if (data.length > 0) {
-                statusText.innerText = ""; 
-                
-                const selectElement = document.createElement('select');
-                selectElement.className = 'form-select border-primary shadow-sm';
-                selectElement.dataset.level = level; 
-                
-                const defaultOption = document.createElement('option');
-                defaultOption.text = "--- Selecciona una categoría ---";
-                defaultOption.value = "";
-                selectElement.appendChild(defaultOption);
-
-                data.forEach(cat => {
-                    const option = document.createElement('option');
-                    option.value = cat.id;
-                    option.text = cat.name;
-                    selectElement.appendChild(option);
-                });
-
-                selectElement.addEventListener('change', function() {
-                    const selectedId = this.value;
-                    if (selectedId) {
-                        hiddenCategoryInput.value = selectedId;
-                        loadCategories(selectedId, level + 1);
-                    } else {
-                        loadCategories(parentId, level); 
-                        hiddenCategoryInput.value = parentId || ""; 
-                    }
-                });
-
-                container.appendChild(selectElement);
-            } else {
-                if(parentId) {
-                    statusText.innerHTML = '<span class="text-success">✓ Sub-categoría final alcanzada</span>';
-                }
-            }
-        } catch (error) {
-            console.error("Error cargando categorías:", error);
-            statusText.innerText = "Error cargando categorías.";
-        }
-    }
-
-    loadCategories();
-});
-</script>
+<script src="{% static 'catalog/js/product_form.js' %}></script>
 {% endblock %}
