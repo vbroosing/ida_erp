@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nueva Orden de Compra - IDA ERP{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2>Crear Orden de Compra</h2>
+    <a href="{% url 'po_list' %}" class="text-decoration-none text-secondary">← Volver a las órdenes</a>
+</div>
+
+<form method="post" id="po-form">
+    {% csrf_token %}
+    
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-dark text-white fw-bold">Datos del Proveedor y Destino</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Proveedor</label>
+                    {{ form.supplier }}
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Bodega de Destino</label>
+                    {{ form.warehouse }}
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Fecha Esperada</label>
+                    {{ form.expected_date }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-secondary text-white fw-bold d-flex justify-content-between align-items-center">
+            <span>Detalle de Productos</span>
+            <button type="button" class="btn btn-sm btn-light fw-bold" id="add-line-btn">+ Agregar Producto</button>
+        </div>
+        <div class="card-body" id="formset-container">
+            
+            {{ lines.management_form }}
+            
+            <div class="row fw-bold mb-2 text-muted small px-2">
+                <div class="col-md-5">Producto</div>
+                <div class="col-md-3">Cantidad</div>
+                <div class="col-md-3">Precio Unitario</div>
+                <div class="col-md-1 text-center">Acción</div>
+            </div>
+
+            <div id="lines-wrapper">
+                {% for line_form in lines %}
+                <div class="row line-form mb-2 align-items-center">
+                    <div class="col-md-5">{{ line_form.product }}</div>
+                    <div class="col-md-3">{{ line_form.quantity }}</div>
+                    <div class="col-md-3">{{ line_form.unit_price }}</div>
+                    <div class="col-md-1 text-center">
+                        {% if line_form.instance.pk %}
+                            {{ line_form.DELETE }} {% else %}
+                            <button type="button" class="btn btn-sm btn-outline-danger remove-line-btn">X</button>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div id="empty-form-template" class="d-none">
+                <div class="row line-form mb-2 align-items-center">
+                    <div class="col-md-5">{{ lines.empty_form.product }}</div>
+                    <div class="col-md-3">{{ lines.empty_form.quantity }}</div>
+                    <div class="col-md-3">{{ lines.empty_form.empty_form.unit_price }}</div>
+                    <div class="col-md-1 text-center">
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-line-btn">X</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end mt-4 mb-5">
+        <button type="submit" class="btn btn-success btn-lg px-5">Guardar Orden de Compra</button>
+    </div>
+</form>
+
+<script src="{% static 'purchases/js/po_form.js' %}">
+
+</script>
+{% endblock %}

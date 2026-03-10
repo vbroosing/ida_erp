@@ -1,0 +1,4 @@
+.sidebar { min-height: 100vh; background-color: #2c3e50; }
+.sidebar a { color: #ecf0f1; text-decoration: none; padding: 10px 15px; display: block; }
+.sidebar a:hover { background-color: #34495e; }
+.content-area { padding: 20px; background-color: #f8f9fa; min-height: 100vh; }
