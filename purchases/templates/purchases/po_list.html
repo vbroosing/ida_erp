@@ -35,6 +35,10 @@
                             {% else %}bg-danger{% endif %}">
                             {{ order.get_status_display }}
                         </span>
+                        
+                        {% if order.status != 'received' and order.status != 'cancelled' %}
+                            <a href="{% url 'po_receive' order.id %}" class="btn btn-sm btn-outline-success ms-2 mt-1 mt-md-0">Recibir</a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% empty %}

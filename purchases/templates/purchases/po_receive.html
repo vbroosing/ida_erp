@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Recibir Orden OC-{{ po.id }} - IDA ERP{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2>Recibir Mercancía: OC-{{ po.id }}</h2>
+    <a href="{% url 'po_list' %}" class="text-decoration-none text-secondary">← Volver a las órdenes</a>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-success">
+            <div class="card-header bg-success text-white fw-bold">
+                Confirmar Ubicación de Almacenamiento
+            </div>
+            <div class="card-body">
+                <p>Estás a punto de recibir los productos del proveedor <strong>{{ po.supplier.name }}</strong>.</p>
+                <p>Bodega destino fijada en la orden: <strong>{{ po.warehouse.name }}</strong></p>
+                
+                <hr>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">¿En qué ubicación física dejarás los productos?</label>
+                        <select name="location_id" class="form-select border-success" required>
+                            <option value="">-- Selecciona una ubicación --</option>
+                            {% for loc in locations %}
+                                <option value="{{ loc.id }}">{{ loc.code }} ({{ loc.get_location_type_display }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="alert alert-warning small">
+                        Al confirmar, el sistema sumará el stock automáticamente y cerrará esta Orden de Compra.
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100 fw-bold">Confirmar Recepción</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light fw-bold">
+                Resumen de Productos a Recibir
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for line in po.lines.all %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ line.product.sku }}</strong><br>
+                        <small class="text-muted">{{ line.product.name }}</small>
+                    </div>
+                    <span class="badge bg-primary rounded-pill fs-6">+ {{ line.quantity }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
