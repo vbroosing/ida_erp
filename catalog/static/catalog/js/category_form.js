@@ -1,14 +1,12 @@
 document.addEventListener("DOMContentLoaded", function() {
-    // --- LÓGICA PARA CATEGORÍAS DINÁMICAS ---
-    const container = document.getElementById('dynamic-categories-container');
-    const hiddenCategoryInput = document.getElementById('id_category');
-    const statusText = document.getElementById('category-status');
+    const container = document.getElementById('dynamic-parent-container');
+    // ATENCIÓN AQUÍ: Buscamos el input 'id_parent' que genera Django para el campo parent
+    const hiddenParentInput = document.getElementById('id_parent'); 
+    const statusText = document.getElementById('parent-status');
     
-    // 1) EXTRAEMOS LA URL DESDE EL HTML
     const apiUrl = container.getAttribute('data-api-url');
 
     async function loadCategories(parentId = null, level = 0) {
-        // 2) USAMOS LA URL EXTRAÍDA AQUÍ
         let url = apiUrl;
         if (parentId) {
             url += `?parent_id=${parentId}`;
@@ -18,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const response = await fetch(url);
             const data = await response.json();
 
+            // Limpiamos los niveles inferiores si el usuario cambia de opinión
             const selects = container.querySelectorAll('select');
             selects.forEach(select => {
                 if (parseInt(select.dataset.level) >= level) {
@@ -33,7 +32,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 selectElement.dataset.level = level; 
                 
                 const defaultOption = document.createElement('option');
-                defaultOption.text = "--- Selecciona una categoría ---";
+                // Texto dinámico para ayudar al usuario
+                defaultOption.text = level === 0 ? "--- Sin categoría padre (Será una categoría raíz) ---" : "--- Selecciona una sub-categoría ---";
                 defaultOption.value = "";
                 selectElement.appendChild(defaultOption);
 
@@ -47,18 +47,20 @@ document.addEventListener("DOMContentLoaded", function() {
                 selectElement.addEventListener('change', function() {
                     const selectedId = this.value;
                     if (selectedId) {
-                        hiddenCategoryInput.value = selectedId;
+                        hiddenParentInput.value = selectedId;
                         loadCategories(selectedId, level + 1);
                     } else {
                         loadCategories(parentId, level); 
-                        hiddenCategoryInput.value = parentId || ""; 
+                        // Si retrocede a "---", toma el ID del nivel anterior, o queda vacío si es la raíz
+                        hiddenParentInput.value = parentId || ""; 
                     }
                 });
 
                 container.appendChild(selectElement);
             } else {
+                // Llegó al final del árbol
                 if(parentId) {
-                    statusText.innerHTML = '<span class="text-success">✓ Sub-categoría final alcanzada</span>';
+                    statusText.innerHTML = '<span class="text-success">✓ La nueva categoría se creará dentro de esta selección.</span>';
                 }
             }
         } catch (error) {
@@ -67,31 +69,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
+    // Arrancamos buscando las categorías raíz
     loadCategories();
-
-    // --- LÓGICA PARA MÚLTIPLES IMÁGENES ---
-    const addImageBtn = document.getElementById('add-image-btn');
-    if (addImageBtn) {
-        const wrapper = document.getElementById('images-wrapper');
-        const emptyImageTemplate = document.getElementById('empty-image-template').innerHTML;
-        const totalImageForms = document.getElementById('id_productimage_set-TOTAL_FORMS');
-
-        addImageBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            let formCount = parseInt(totalImageForms.value);
-            let newFormHtml = emptyImageTemplate.replace(/__prefix__/g, formCount);
-            
-            // Insertando la nueva fila antes del botón de agregar
-            addImageBtn.insertAdjacentHTML('beforebegin', newFormHtml);
-            totalImageForms.value = formCount + 1;
-        });
-
-        // Borrando filas
-        wrapper.addEventListener('click', function(e) {
-            if (e.target && e.target.classList.contains('remove-image-btn')) {
-                e.preventDefault();
-                e.target.closest('.image-form').remove();
-            }
-        });
-    } // <- Cierra el if(addImageBtn)
-}); // <- Cierra el DOMContentLoaded
+});

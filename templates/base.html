@@ -22,8 +22,9 @@
                 </a>
                 <div class="collapse show bg-dark" id="catalogSubmenu">
                     <a href="{% url 'product_list' %}" class="ps-5 py-2 small text-light text-decoration-none">Productos</a>
-                    <a href="#" class="ps-5 py-2 small text-light text-muted text-decoration-none">Marcas (Próximamente)</a>
-                    <a href="#" class="ps-5 py-2 small text-light text-muted text-decoration-none">Categorías (Próximamente)</a>
+                    <a href="{% url 'brand_list' %}" class="ps-5 py-2 small text-light text-decoration-none">Marcas</a>
+                    <a href="{% url 'category_list' %}" class="ps-5 py-2 small text-light text-decoration-none">Categorías</a>
+                    <a href="{% url 'unit_list' %}" class="ps-5 py-2 small text-light text-decoration-none">Unidades de Medida</a>
                 </div>
 
                 <a href="#inventorySubmenu" data-bs-toggle="collapse" class="d-flex justify-content-between align-items-center text-decoration-none">

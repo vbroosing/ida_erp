@@ -1,5 +1,6 @@
 from django import forms
-from .models import Product
+from django.forms import inlineformset_factory
+from .models import Product, ProductImage, Brand, Category, UnitOfMeasure
 
 class ProductForm(forms.ModelForm):
     class Meta:
@@ -20,4 +21,40 @@ class ProductForm(forms.ModelForm):
             'width': forms.NumberInput(attrs={'class': 'form-control'}),
             'length': forms.NumberInput(attrs={'class': 'form-control'}),
             'min_stock_alert': forms.NumberInput(attrs={'class': 'form-control'}),
+        }
+
+# Generador de formularios para múltiples imágenes
+ProductImageFormSet = inlineformset_factory(
+    Product, 
+    ProductImage, 
+    fields=['url', 'name', 'is_main'],
+    extra=1, # Muestra 1 fila vacía por defecto
+    can_delete=True,
+    widgets={
+        'url': forms.URLInput(attrs={'class': 'form-control', 'placeholder': 'https://ejemplo.com/imagen.jpg'}),
+        'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Vista frontal'}),
+        'is_main': forms.CheckboxInput(attrs={'class': 'form-check-input', 'role': 'switch'}),
+    }
+)
+
+
+class BrandForm(forms.ModelForm):
+    class Meta:
+        model = Brand
+        fields = ['name']
+        widgets = {'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre de la marca'})}
+
+class UnitOfMeasureForm(forms.ModelForm):
+    class Meta:
+        model = UnitOfMeasure
+        fields = ['name']
+        widgets = {'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: Unidad, Kg, Litro'})}
+
+class CategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = ['name', 'parent']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre de la categoría'}),
+            'parent': forms.Select(attrs={'class': 'form-select'})
         }

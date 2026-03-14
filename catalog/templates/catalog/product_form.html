@@ -50,6 +50,65 @@
                 <div class="col-md-3">{{ form.min_stock_alert.label_tag }} {{ form.min_stock_alert }}</div>
             </div>
 
+            <hr>
+
+            <div class="row mb-3">
+                <div class="col-md-12 mb-2">
+                    <label class="form-label fw-bold">Imágenes del Producto (URLs)</label>
+                </div>
+                <div class="col-md-12">
+                    <div class="card bg-light border-0">
+                        <div class="card-body" id="images-wrapper">
+                            {{ images.management_form }}
+                            
+                            <div class="row text-muted small fw-bold px-2 mb-2">
+                                <div class="col-md-5">URL de la Imagen</div>
+                                <div class="col-md-4">Nombre / Título</div>
+                                <div class="col-md-2 text-center">¿Es Portada?</div>
+                                <div class="col-md-1 text-center">Borrar</div>
+                            </div>
+
+                            {% for img_form in images %}
+                            <div class="row image-form mb-2 align-items-center">
+                                <div class="col-md-5">{{ img_form.url }}</div>
+                                <div class="col-md-4">{{ img_form.name }}</div>
+                                <div class="col-md-2 text-center">
+                                    <div class="form-check form-switch d-flex justify-content-center">
+                                        {{ img_form.is_main }}
+                                    </div>
+                                </div>
+                                <div class="col-md-1 text-center">
+                                    {% if img_form.instance.pk %}
+                                        {{ img_form.DELETE }}
+                                    {% else %}
+                                        <button type="button" class="btn btn-sm btn-outline-danger remove-image-btn">X</button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                            
+                            <button type="button" class="btn btn-sm btn-secondary mt-2" id="add-image-btn">+ Agregar otra URL</button>
+                            
+                            <div id="empty-image-template" class="d-none">
+                                <div class="row image-form mb-2 align-items-center">
+                                    <div class="col-md-5">{{ images.empty_form.url }}</div>
+                                    <div class="col-md-4">{{ images.empty_form.name }}</div>
+                                    <div class="col-md-2 text-center">
+                                        <div class="form-check form-switch d-flex justify-content-center">
+                                            {{ images.empty_form.is_main }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-1 text-center">
+                                        <button type="button" class="btn btn-sm btn-outline-danger remove-image-btn">X</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="d-flex justify-content-end mt-4">
                 <button type="submit" class="btn btn-success px-4">Guardar Producto</button>
             </div>

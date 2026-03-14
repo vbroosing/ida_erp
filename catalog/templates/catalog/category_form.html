@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Nueva Categoría - IDA ERP{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2>Registrar Nueva Categoría</h2>
+    <a href="{% url 'category_list' %}" class="text-decoration-none text-secondary">← Volver al listado</a>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Nombre de la Categoría</label>
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                            <div class="text-danger small mt-1">{{ form.name.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Categoría Padre (Jerarquía)</label>
+                        <div class="text-muted small mb-2">
+                            Si esta es una categoría principal (ej: "Electrónica"), no selecciones nada abajo. 
+                            Si es una subcategoría (ej: "Mouses"), selecciona la ruta correspondiente.
+                        </div>
+                        
+                        <div class="d-none">
+                            {{ form.parent }}
+                        </div>
+                        
+                        <div id="dynamic-parent-container" class="d-flex flex-column gap-2" data-api-url="{% url 'api_subcategories' %}"></div>
+                        <div id="parent-status" class="text-muted small mt-1"></div>
+                        
+                        {% if form.parent.errors %}
+                            <div class="text-danger small mt-1">{{ form.parent.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="submit" class="btn btn-success px-4">Guardar Categoría</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'catalog/js/category_form.js' %}"></script>
+{% endblock %}
